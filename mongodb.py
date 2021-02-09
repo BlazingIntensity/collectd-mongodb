@@ -98,6 +98,12 @@ class MongoDB(object):
             self.accesses = index_counters['accesses']
             self.misses = index_counters['misses']
 
+        # repl set
+        repl_status = db.command('replSetGetStatus')
+        if 'members' in repl_status:
+            for member in repl_status['members']:
+                self.submit('replset', member['name'], member['state'])
+
         for mongo_db in self.mongo_db:
             db = con[mongo_db]
             if self.mongo_user and self.mongo_password:
